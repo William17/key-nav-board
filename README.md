@@ -1,4 +1,4 @@
-# key-nav-board [![Build Status](https://travis-ci.org/William17/key-nav-board.png?branch=main)](http://travis-ci.org/William17/key-nav-board)    
+# key-nav-board [![Build Status](https://travis-ci.org/William17/key-nav-board.png?branch=main)](http://travis-ci.org/William17/key-nav-board) [![Coverage Status](https://coveralls.io/repos/William17/key-nav-board/badge.svg?branch=main&service=github)](https://coveralls.io/github/William17/key-nav-board?branch=main)     
 
 一个使用键盘对页面上的块进行导航（焦点控制）的库，可与 React，Vue 和 Svelte 等集成。尤其适用于大屏端页面的焦点控制。  
 
