@@ -2,10 +2,12 @@ import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 import sourceMaps from 'rollup-plugin-sourcemaps'
 import camelCase from 'lodash.camelcase'
-import typescript from 'rollup-plugin-typescript2'
+import typescript from '@wessberg/rollup-plugin-ts'
 import json from 'rollup-plugin-json'
+import { terser } from "rollup-plugin-terser"
 
 const pkg = require('./package.json')
+const isProduction = process.env.NODE_ENV === 'production'
 
 const libraryName = 'keyboard-nav'
 
@@ -24,7 +26,8 @@ export default {
     // Allow json resolution
     json(),
     // Compile TypeScript files
-    typescript({ useTsconfigDeclarationDir: true }),
+    typescript(),
+    isProduction && terser(),
     // Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
     commonjs(),
     // Allow node_modules resolution, so you can use 'external' to control
