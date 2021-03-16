@@ -1262,7 +1262,7 @@ describe('priority', () => {
 
 describe('memory', () => {
   test('up memory', () => {
-    const nav = new KeyNavBoard()
+    const nav = new KeyNavBoard({remember: true})
     const items = [
       {
         rect: {
@@ -1305,7 +1305,7 @@ describe('memory', () => {
     expect(nav.getActiveItem()).toBe(items[1])
   })
   test('right memory', () => {
-    const nav = new KeyNavBoard()
+    const nav = new KeyNavBoard({remember: true})
     const items = [
       {
         rect: {
@@ -1348,7 +1348,7 @@ describe('memory', () => {
     expect(nav.getActiveItem()).toBe(items[2])
   })
   test('down memory', () => {
-    const nav = new KeyNavBoard()
+    const nav = new KeyNavBoard({remember: true})
     const items = [
       {
         rect: {
@@ -1389,7 +1389,7 @@ describe('memory', () => {
     expect(nav.getActiveItem()).toBe(items[2])
   })
   test('left memory', () => {
-    const nav = new KeyNavBoard()
+    const nav = new KeyNavBoard({remember: true})
     const items = [
       {
         rect: {

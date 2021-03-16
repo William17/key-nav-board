@@ -72,26 +72,21 @@ export class NavItem {
 }
 
 export type KeyNavBoardConstructorOptions = {
-  triggerActive?: InstanceType<typeof KeyNavBoard>['triggerActive'], 
-  triggerDeactive?: InstanceType<typeof KeyNavBoard>['triggerDeactive'], 
+  remember?: boolean
 }
 
 export class KeyNavBoard {
   static id = 1
   id: string
+  remember: boolean
   activeItem: NavItem | null
   listHead: NavItem | undefined
   listTail: NavItem | undefined
   constructor(options: KeyNavBoardConstructorOptions = {}) {
-    const { triggerActive, triggerDeactive } = options
+    const { remember } = options
     this.id = 'board-' + KeyNavBoard.id++
     this.activeItem = null
-    if (triggerActive) {
-      this.triggerActive = triggerActive
-    }
-    if (triggerDeactive) {
-      this.triggerDeactive = triggerDeactive
-    }
+    this.remember = remember || false
   }
   addItem(item: NavItem) {
     const { id, listTail } = this
@@ -196,16 +191,18 @@ export class KeyNavBoard {
       const itemLeft = itemCoordinates[keys.left]
       const distance = isRightOrDown ? (itemLeft - right) : (left - itemRight)
       if (distance >= 0) {
+        // 总体思路
         // 有重叠里面找距离最近的
         // 如果没有重叠的，就找距离最近的
         if (memoryItem && memoryItem.id === itemId) {
           bestItem = item
           break
         }
+        // intersectionVal > 0 才被认定为有重叠
         const intersectionVal = this.getIntersectionVal(head, foot, itemHead, itemFoot)
         if (bestIntersectionVal > 0) {
-          // 当前已经找到一个有重叠的
-          // 如果现在这个没有重叠， 或者有重叠，但是距离比较远，则跳过
+          // 已经找到一个有重叠的
+          // 如果现在这个没有重叠， 或者有重叠，但是距离比当前有重叠的远，则跳过
           if (intersectionVal <= 0 || (distance > bestDistance)) {
             continue
           }
@@ -220,8 +217,8 @@ export class KeyNavBoard {
             }
           }
         } else {
-          // 当前没找到重叠的，如果距离比较远，则跳过
-          if (distance > bestDistance) {
+          // 没找到重叠的，当前这个也没重叠，而且距离比较远，则跳过
+          if (distance > bestDistance && intersectionVal <= 0 ) {
             continue
           }
         }
@@ -285,13 +282,16 @@ export class KeyNavBoard {
     
   }
   navigate(direction: Direction) {
+    const remember = this.remember
     const activeItem = this.getActiveItem()
     if (!activeItem) {
       return
     }
     const { fromDirection, fromItem } = activeItem
-    const memoryItem = fromDirection && direction === OppositeDirection[fromDirection]
-      ? fromItem
+    const memoryItem = remember
+      ? fromDirection && direction === OppositeDirection[fromDirection]
+        ? fromItem
+        : undefined
       : undefined
     const nextActiveItem = this.getMatchResult(activeItem, direction, memoryItem)
     if (nextActiveItem && nextActiveItem !== activeItem) {
