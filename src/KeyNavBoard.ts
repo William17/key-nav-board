@@ -300,6 +300,7 @@ export class KeyNavBoard {
       nextActiveItem.fromDirection = direction
       nextActiveItem.fromItem = activeItem
       this.setActiveItem(nextActiveItem)
+      return nextActiveItem
     }
   }
 }
