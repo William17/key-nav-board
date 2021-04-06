@@ -4,16 +4,15 @@
 
 * 0 依赖，体积小，大约 3kb  
 * 低层，方便与不同的库集成和在不同环境使用
-* 带有与现代前端框架集成方案(目前支持 Svelte)     
+* 可与现代前端框架集成方案       
 
 ![](https://raw.githubusercontent.com/William17/key-nav-board/main/demo.gif)
 
 ## 使用  
 安装  
 ```sh
-npm install key-nav-board  
+npm install key-nav-board --save 
 ```  
 
-集成  
-参考 `src/svelte.ts`
-
+## 文档  
+/docs  
