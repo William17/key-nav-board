@@ -39,15 +39,15 @@ type ItemOptions = {
   disabled?: boolean,
   active?: boolean
 }
-function triggerActive (node: HTMLElement) {
+function triggerActive (node: any) {
   node.focus()
 }
-function triggerDeactive(node: HTMLElement) {
+function triggerDeactive(node: any) {
   node.blur()
 }
 
 function createItem (keyNavBoard: KeyNavBoard) {
-  return function item (node: HTMLElement, options: ItemOptions = {disabled: false, active: false}) {
+  return function item (node: any, options: ItemOptions = {disabled: false, active: false}) {
     const item = new NavItem(node)
     if (!node.getAttribute('tabindex')) {
       node.setAttribute('tabindex', '0')
