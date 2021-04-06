@@ -1,6 +1,6 @@
 {
   "name": "key-nav-board",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Navigating blocks on page with keyboard(up,left,down,right). Easily integrate width React, Vue and Svelte",
   "keywords": [
     "keyboard",

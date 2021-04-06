@@ -57,6 +57,7 @@ export class NavItem {
   static ID = 1
   id: string
   el: Element
+  name: string
   boardId?: string
   prev?: NavItem
   next?: NavItem;
@@ -65,6 +66,7 @@ export class NavItem {
   constructor(el: Element) {
     this.el = el
     this.id = 'item-' + NavItem.ID++
+    this.name = el.getAttribute('nav-name')
   }
   // toJSON () {
   //   return this.id
@@ -82,12 +84,20 @@ export class KeyNavBoard {
   activeItem: NavItem | null
   listHead: NavItem | undefined
   listTail: NavItem | undefined
+  items: {
+    [key: string]: NavItem | undefined
+  }
   constructor(options: KeyNavBoardConstructorOptions = {}) {
     const { remember } = options
     this.id = 'board-' + KeyNavBoard.id++
     this.activeItem = null
     this.remember = remember || false
+    this.items = {}
   }
+  /**
+   * add item to the board
+   * @param item 
+   */
   addItem(item: NavItem) {
     const { id, listTail } = this
     if (item.boardId !== id) {
@@ -100,8 +110,16 @@ export class KeyNavBoard {
         this.listHead = item
         this.listTail = item
       }
+      const name = item.name
+      if (name) {
+        this.items[name] = item
+      }
     }
   }
+  /**
+   * remove item from board
+   * @param item 
+   */
   removeItem(item: NavItem) {
     if (item.boardId === this.id) {
       item.boardId = undefined
@@ -131,33 +149,31 @@ export class KeyNavBoard {
       }
       item.prev = undefined
       item.next = undefined
+      const name = item.name
+      if (name) {
+        this.items[name] = undefined
+      }
     }
   }
   setActiveItem(item: NavItem) {
     if (item.boardId === this.id) {
-      this.triggerDeactive(this.activeItem)
+      const activeItem = this.getActiveItem()
+      if (activeItem) {
+        // 清除记忆
+        activeItem.fromDirection = undefined
+        activeItem.fromItem = undefined
+      }
       this.activeItem = item
-      this.triggerActive(item)
-    }
-  }
-  triggerActive(item: NavItem | null) {
-    if (item) {
-      item.el.focus()
-    }
-  }
-  triggerDeactive (item: NavItem | null) {
-    if (item) {
-      item.el.blur()
     }
   }
   getActiveItem() {
     return this.activeItem
   }
-  getCoordinates(item: Element): Coordinates {
+  protected getCoordinates(item: Element): Coordinates {
     const { x, y, width, height } = item.getBoundingClientRect()
     return { x1: x, x2: x + width, y1: y, y2: y + height }
   }
-  getMatchResult(
+  protected getMatchResult(
     currentItem: NavItem,
     direction: Direction,
     memoryItem?: NavItem
@@ -230,7 +246,7 @@ export class KeyNavBoard {
     }
     return bestItem
   }
-  getIntersectionVal(head: number, foot: number, itemHead: number, itemFoot: number) {
+  protected getIntersectionVal(head: number, foot: number, itemHead: number, itemFoot: number) {
     //       itemHead
     //
     //       itemFoot
@@ -282,10 +298,27 @@ export class KeyNavBoard {
     
   }
   navigate(direction: Direction) {
+    const activeItem = this.getActiveItem()
+    const nextActiveItem = this.getNext(direction)
+    if (activeItem && nextActiveItem && nextActiveItem !== activeItem) {
+      nextActiveItem.fromDirection = direction
+      nextActiveItem.fromItem = activeItem
+      this.setActiveItem(nextActiveItem)
+      return nextActiveItem
+    }
+  }
+  getNext(direction: Direction) {
     const remember = this.remember
     const activeItem = this.getActiveItem()
     if (!activeItem) {
       return
+    }
+    const targetName = activeItem.el.getAttribute('nav-' + direction)
+    if (targetName) {
+      const target = this.items[targetName]
+      if (target) {
+        return target
+      }
     }
     const { fromDirection, fromItem } = activeItem
     const memoryItem = remember
@@ -293,14 +326,6 @@ export class KeyNavBoard {
         ? fromItem
         : undefined
       : undefined
-    const nextActiveItem = this.getMatchResult(activeItem, direction, memoryItem)
-    if (nextActiveItem && nextActiveItem !== activeItem) {
-      activeItem.fromDirection = undefined
-      activeItem.fromItem = undefined
-      nextActiveItem.fromDirection = direction
-      nextActiveItem.fromItem = activeItem
-      this.setActiveItem(nextActiveItem)
-      return nextActiveItem
-    }
+    return this.getMatchResult(activeItem, direction, memoryItem)
   }
 }

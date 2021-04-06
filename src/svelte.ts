@@ -24,6 +24,10 @@ function createContainer (keyNavBoard: KeyNavBoard) {
       }
     }
     node.addEventListener('keydown', handleKeydown, true)
+    const activeItem = keyNavBoard.getActiveItem()
+    if (activeItem) {
+      activeItem.el.focus()
+    }
     return {
       destroy() {
         node.removeEventListener('keydown', handleKeydown, true)
@@ -35,8 +39,15 @@ type ItemOptions = {
   disabled?: boolean,
   active?: boolean
 }
+function triggerActive (node: HTMLElement) {
+  node.focus()
+}
+function triggerDeactive(node: HTMLElement) {
+  node.blur()
+}
+
 function createItem (keyNavBoard: KeyNavBoard) {
-  return function item (node: any, options: ItemOptions = {disabled: false, active: false}) {
+  return function item (node: HTMLElement, options: ItemOptions = {disabled: false, active: false}) {
     const item = new NavItem(node)
     if (!node.getAttribute('tabindex')) {
       node.setAttribute('tabindex', '0')
@@ -46,6 +57,7 @@ function createItem (keyNavBoard: KeyNavBoard) {
     }
     if (options.active) {
       keyNavBoard.setActiveItem(item)
+      triggerActive(node)
     }
     return {
       update (options: ItemOptions) {
@@ -56,6 +68,7 @@ function createItem (keyNavBoard: KeyNavBoard) {
         }
         if (options.active) {
           keyNavBoard.setActiveItem(item)
+          triggerActive(node)
         }
       },
       destroy () {
@@ -69,10 +82,16 @@ export function createKeyNavActions (options?: KeyNavBoardConstructorOptions) {
   const navContainer = createContainer(navBoard)
   const navItem = createItem(navBoard)
   const pause = () => {
-    navBoard.triggerDeactive(navBoard.getActiveItem())
+    const activeItem = navBoard.getActiveItem()
+    if (activeItem) {
+      triggerDeactive(activeItem.el)
+    }
   }
   const resume = () => {
-    navBoard.triggerActive(navBoard.getActiveItem())
+    const activeItem = navBoard.getActiveItem()
+    if (activeItem) {
+      triggerActive(activeItem.el)
+    }
   }
   return {
     navBoard,
