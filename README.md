@@ -15,4 +15,4 @@ npm install key-nav-board --save
 ```  
 
 ## 文档  
-/docs  
+[https://william17.github.io/key-nav-board/docs/](https://william17.github.io/key-nav-board/docs/)
